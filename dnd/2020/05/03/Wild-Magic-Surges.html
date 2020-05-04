@@ -126,7 +126,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      5 min read
     
 </span></p>
 
@@ -186,7 +186,7 @@ window.onload = wrap_img;
 <ol>
 <li><p>The "Increasing Count" method. Start as usual with a Wild Magic Surge triggering when the player rolls a <code>1</code> on their Surge roll. Every time a Surge <em>does not occur</em>, increase the D.C. for avoiding the Surge by one: <code>1</code> $\rightarrow$ <code>2</code> $\rightarrow$ <code>3</code>, etc. When a Surge <em>does</em> occur, reset the D.C. to 1.</p>
 </li>
-<li><p>The "Decreasing Die" method. Start as usual with a Wild Magic Surge triggering when the player rolls a <code>1</code> on their <code>d20</code> Surge roll. Every time a surge <em>does not occur</em>, decrease the size of the die by one: <code>d20</code> $\rightarrow$ <code>d12</code> $\rightarrow$ <code>d10</code>, etc. When a Surge <em>does</em> occur, reset the die to a <code>d20</code>. Here we stop at a <code>d4</code> and just make the player continue rolling a <code>d4</code> until they do get a Surge, but you could continue down to a coin flip (<code>d2</code>), and you could even continue from a coin flip to an automatic Surge (rolling a <code>1</code> on a "<code>d1</code>").</p>
+<li><p>The "Decreasing Die" method. Start as usual with a Wild Magic Surge triggering when the player rolls a <code>1</code> on their <code>d20</code> Surge roll. Every time a surge <em>does not occur</em>, decrease the size of the die by one: <code>d20</code> $\rightarrow$ <code>d12</code> $\rightarrow$ <code>d10</code>, etc. When a Surge <em>does</em> occur, reset the die to a <code>d20</code>. If a player avoids triggering a Surge all the way down through a <code>d2</code> (a coin flip), their next Surge is automatic. Or, we can think of this as rolling a <code>1</code> on a "<code>d1</code>".</p>
 </li>
 </ol>
 <p>Below we calculate the probabilities of triggering a Wild Magic Surge under both of the above systems.</p>
@@ -204,8 +204,17 @@ window.onload = wrap_img;
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">altair</span> <span class="k">as</span> <span class="nn">alt</span>
-<span class="n">dice</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">dice</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">count</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">21</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">pDiceSurge</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">d</span>
+<span class="k">def</span> <span class="nf">pDiceNoSurge</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span><span class="o">-</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">d</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pCountSurge</span><span class="p">(</span><span class="n">dc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">dc</span><span class="o">/</span><span class="mf">20.0</span>
+<span class="k">def</span> <span class="nf">pCountNoSurge</span><span class="p">(</span><span class="n">dc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">dc</span><span class="o">/</span><span class="mf">20.0</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -217,7 +226,8 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>First, we build a list of probabilities for <em>not</em> rolling a <code>1</code> on each of the dice: <code>d20</code>, <code>d12</code>, <code>d10</code>, ..., <code>d4</code></p>
+<p>First, we calculate the $PDF$ for the Decreasing Dice method &mdash; that is, the probability of rolling a Wild Magic surge on the $i^{th}$ roll exactly, no earlier and no later, for each $i$.</p>
+<p>This is equal to the probability that we <em>don't</em> rolls a surge for the first $i-1$ rolls, times the probability that we <em>do</em> roll a surge on the $i^{th}$ roll:</p>
 
 </div>
 </div>
@@ -229,7 +239,14 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">diceP</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">x</span><span class="p">),</span> <span class="n">dice</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">marginalP</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">pDiceNoSurge</span><span class="p">,</span> <span class="n">dice</span><span class="p">))</span>
+<span class="n">dicePDF</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">pDiceSurge</span><span class="p">(</span><span class="n">dice</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">marginalP</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">pDiceSurge</span><span class="p">(</span><span class="n">dice</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">dicePDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -241,7 +258,7 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We also build a list of probabilities for <em>not</em> rolling (<code>1</code>), (<code>1</code>/<code>2</code>), (<code>1</code>/<code>2</code>/<code>3</code>), etc. on a <code>d20</code>:</p>
+<p>We also calculate the $PDF$ for the Increasing Count method:</p>
 
 </div>
 </div>
@@ -253,7 +270,14 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">countP</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="mi">20</span><span class="p">),</span> <span class="n">count</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">marginalP</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">pCountNoSurge</span><span class="p">,</span> <span class="n">count</span><span class="p">))</span>
+<span class="n">countPDF</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">pCountSurge</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">marginalP</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">pCountSurge</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">countPDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -265,7 +289,8 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Then we multiply the first $i$ probabilities together &mdash; for $i = 1,2,3, \dots , 20$ &mdash; to get the probability of going $i$ rolls without a Wild Magic Surge under either system:</p>
+<p>Then we calculate the $CDF$ &mdash; that is, the probability of encountering a Wild Magic Surge in $k$ rolls or fewer, for each $k$.\
+This is just the sum from $i=1$ to $i=k$ of the probabilities of getting a surge in exactly $i$ rolls &mdash; a partial sum of the $PDF$ we calculated above:</p>
 
 </div>
 </div>
@@ -280,38 +305,8 @@ window.onload = wrap_img;
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">diceCDF</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">countCDF</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">21</span><span class="p">):</span>
-    <span class="n">diceCDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">diceP</span><span class="p">[:</span><span class="n">i</span><span class="p">]))</span>
-    <span class="n">countCDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">countP</span><span class="p">[:</span><span class="n">i</span><span class="p">]))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Lastly, because it's more intuitive to think about it this way, we subtract each of these probabilities from $1$ to get the probability of encountering a surge in $x$ number of rolls:</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">diceCDF</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">diceCDF</span><span class="p">))</span>
-<span class="n">countCDF</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">countCDF</span><span class="p">))</span>
-
-<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">diceCDF</span><span class="p">)):</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">diceCDF</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;Decreasing Die&#39;</span><span class="p">])</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">countCDF</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;Increasing Count&#39;</span><span class="p">])</span>
+    <span class="n">diceCDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dicePDF</span><span class="p">[:</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">countCDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">countPDF</span><span class="p">[:</span><span class="n">i</span><span class="p">]))</span>
 </pre></div>
 
     </div>
@@ -338,7 +333,15 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Number of Rolls&#39;</span><span class="p">,</span> <span class="s1">&#39;Probability&#39;</span><span class="p">,</span> <span class="s1">&#39;Method&#39;</span><span class="p">])</span>
+<span class="n">cData</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">pData</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">diceCDF</span><span class="p">)):</span>
+    <span class="n">cData</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">diceCDF</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;Decreasing Die&#39;</span><span class="p">])</span>
+    <span class="n">cData</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">countCDF</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;Increasing Count&#39;</span><span class="p">])</span>
+    <span class="n">pData</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">dicePDF</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;Decreasing Die&#39;</span><span class="p">])</span>
+    <span class="n">pData</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">countPDF</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;Increasing Count&#39;</span><span class="p">])</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cData</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Number of Rolls&#39;</span><span class="p">,</span> <span class="s1">&#39;Probability&#39;</span><span class="p">,</span> <span class="s1">&#39;Method&#39;</span><span class="p">])</span>
 <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 
 <span class="c1"># Create a selection that chooses the nearest point &amp; selects based on x-value</span>
@@ -394,12 +397,12 @@ window.onload = wrap_img;
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-<div id="altair-viz-4a21156125c64d23a2381e9cf4aaae84"></div>
+<div id="altair-viz-29ea6b60a555442ab8e119cb06a27c0b"></div>
 <script type="text/javascript">
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-4a21156125c64d23a2381e9cf4aaae84") {
-      outputDiv = document.getElementById("altair-viz-4a21156125c64d23a2381e9cf4aaae84");
+    if (outputDiv.id !== "altair-viz-29ea6b60a555442ab8e119cb06a27c0b") {
+      outputDiv = document.getElementById("altair-viz-29ea6b60a555442ab8e119cb06a27c0b");
     }
     const paths = {
       "vega": "https://cdn.jsdelivr.net/npm//vega@5?noext",
@@ -441,7 +444,7 @@ window.onload = wrap_img;
         .catch(showError)
         .then(() => displayChart(vegaEmbed));
     }
-  })({"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "layer": [{"mark": "point", "encoding": {"opacity": {"value": 0}, "x": {"type": "ordinal", "field": "Number of Rolls"}}, "selection": {"selector022": {"type": "single", "nearest": true, "on": "mouseover", "fields": ["Number of Rolls"], "empty": "none"}}}, {"mark": "circle", "encoding": {"color": {"type": "nominal", "field": "Method"}, "opacity": {"condition": {"value": 1, "selection": "selector022"}, "value": 0.6}, "x": {"type": "ordinal", "field": "Number of Rolls"}, "y": {"type": "quantitative", "field": "Probability", "title": "Probability of a Surge"}}}, {"mark": {"type": "rule", "color": "gray"}, "encoding": {"x": {"type": "ordinal", "field": "Number of Rolls"}}, "transform": [{"filter": {"selection": "selector022"}}]}, {"mark": {"type": "text", "align": "left", "dx": 5, "dy": -5}, "encoding": {"color": {"type": "nominal", "field": "Method"}, "opacity": {"condition": {"value": 1, "selection": "selector022"}, "value": 0.6}, "text": {"condition": {"type": "quantitative", "field": "Probability", "selection": "selector022"}, "value": " "}, "x": {"type": "ordinal", "field": "Number of Rolls"}, "y": {"type": "quantitative", "field": "Probability", "title": "Probability of a Surge"}}}], "data": {"name": "data-7f1acefa969889e77578fee6fff7fe25"}, "height": 300, "width": 600, "$schema": "https://vega.github.io/schema/vega-lite/v4.8.1.json", "datasets": {"data-7f1acefa969889e77578fee6fff7fe25": [{"Number of Rolls": 1, "Probability": 0.050000000000000044, "Method": "Decreasing Die"}, {"Number of Rolls": 1, "Probability": 0.050000000000000044, "Method": "Increasing Count"}, {"Number of Rolls": 2, "Probability": 0.12916666666666676, "Method": "Decreasing Die"}, {"Number of Rolls": 2, "Probability": 0.14500000000000002, "Method": "Increasing Count"}, {"Number of Rolls": 3, "Probability": 0.21625000000000005, "Method": "Decreasing Die"}, {"Number of Rolls": 3, "Probability": 0.27325, "Method": "Increasing Count"}, {"Number of Rolls": 4, "Probability": 0.31421875, "Method": "Decreasing Die"}, {"Number of Rolls": 4, "Probability": 0.41859999999999997, "Method": "Increasing Count"}, {"Number of Rolls": 5, "Probability": 0.42851562499999996, "Method": "Decreasing Die"}, {"Number of Rolls": 5, "Probability": 0.56395, "Method": "Increasing Count"}, {"Number of Rolls": 6, "Probability": 0.5713867187499999, "Method": "Decreasing Die"}, {"Number of Rolls": 6, "Probability": 0.694765, "Method": "Increasing Count"}, {"Number of Rolls": 7, "Probability": 0.6785400390625, "Method": "Decreasing Die"}, {"Number of Rolls": 7, "Probability": 0.8015972499999999, "Method": "Increasing Count"}, {"Number of Rolls": 8, "Probability": 0.758905029296875, "Method": "Decreasing Die"}, {"Number of Rolls": 8, "Probability": 0.88095835, "Method": "Increasing Count"}, {"Number of Rolls": 9, "Probability": 0.8191787719726562, "Method": "Decreasing Die"}, {"Number of Rolls": 9, "Probability": 0.9345270925, "Method": "Increasing Count"}, {"Number of Rolls": 10, "Probability": 0.8643840789794922, "Method": "Decreasing Die"}, {"Number of Rolls": 10, "Probability": 0.96726354625, "Method": "Increasing Count"}, {"Number of Rolls": 11, "Probability": 0.8982880592346192, "Method": "Decreasing Die"}, {"Number of Rolls": 11, "Probability": 0.9852685958125, "Method": "Increasing Count"}, {"Number of Rolls": 12, "Probability": 0.9237160444259643, "Method": "Decreasing Die"}, {"Number of Rolls": 12, "Probability": 0.994107438325, "Method": "Increasing Count"}, {"Number of Rolls": 13, "Probability": 0.9427870333194732, "Method": "Decreasing Die"}, {"Number of Rolls": 13, "Probability": 0.99793760341375, "Method": "Increasing Count"}, {"Number of Rolls": 14, "Probability": 0.957090274989605, "Method": "Decreasing Die"}, {"Number of Rolls": 14, "Probability": 0.999381281024125, "Method": "Increasing Count"}, {"Number of Rolls": 15, "Probability": 0.9678177062422038, "Method": "Decreasing Die"}, {"Number of Rolls": 15, "Probability": 0.9998453202560312, "Method": "Increasing Count"}, {"Number of Rolls": 16, "Probability": 0.9758632796816528, "Method": "Decreasing Die"}, {"Number of Rolls": 16, "Probability": 0.9999690640512062, "Method": "Increasing Count"}, {"Number of Rolls": 17, "Probability": 0.9818974597612395, "Method": "Decreasing Die"}, {"Number of Rolls": 17, "Probability": 0.9999953596076809, "Method": "Increasing Count"}, {"Number of Rolls": 18, "Probability": 0.9864230948209297, "Method": "Decreasing Die"}, {"Number of Rolls": 18, "Probability": 0.9999995359607681, "Method": "Increasing Count"}, {"Number of Rolls": 19, "Probability": 0.9898173211156973, "Method": "Decreasing Die"}, {"Number of Rolls": 19, "Probability": 0.9999999767980384, "Method": "Increasing Count"}, {"Number of Rolls": 20, "Probability": 0.9923629908367729, "Method": "Decreasing Die"}, {"Number of Rolls": 20, "Probability": 1.0, "Method": "Increasing Count"}]}}, {"mode": "vega-lite"});
+  })({"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "layer": [{"mark": "point", "encoding": {"opacity": {"value": 0}, "x": {"type": "ordinal", "field": "Number of Rolls"}}, "selection": {"selector008": {"type": "single", "nearest": true, "on": "mouseover", "fields": ["Number of Rolls"], "empty": "none"}}}, {"mark": "circle", "encoding": {"color": {"type": "nominal", "field": "Method"}, "opacity": {"condition": {"value": 1, "selection": "selector008"}, "value": 0.6}, "x": {"type": "ordinal", "field": "Number of Rolls"}, "y": {"type": "quantitative", "field": "Probability", "title": "Probability of a Surge"}}}, {"mark": {"type": "rule", "color": "gray"}, "encoding": {"x": {"type": "ordinal", "field": "Number of Rolls"}}, "transform": [{"filter": {"selection": "selector008"}}]}, {"mark": {"type": "text", "align": "left", "dx": 5, "dy": -5}, "encoding": {"color": {"type": "nominal", "field": "Method"}, "opacity": {"condition": {"value": 1, "selection": "selector008"}, "value": 0.6}, "text": {"condition": {"type": "quantitative", "field": "Probability", "selection": "selector008"}, "value": " "}, "x": {"type": "ordinal", "field": "Number of Rolls"}, "y": {"type": "quantitative", "field": "Probability", "title": "Probability of a Surge"}}}], "data": {"name": "data-7b09d4d0fad293183e3d0139dd369ac7"}, "height": 300, "width": 600, "$schema": "https://vega.github.io/schema/vega-lite/v4.8.1.json", "datasets": {"data-7b09d4d0fad293183e3d0139dd369ac7": [{"Number of Rolls": 1, "Probability": 0.05, "Method": "Decreasing Die"}, {"Number of Rolls": 1, "Probability": 0.05, "Method": "Increasing Count"}, {"Number of Rolls": 2, "Probability": 0.12916666666666665, "Method": "Decreasing Die"}, {"Number of Rolls": 2, "Probability": 0.14500000000000002, "Method": "Increasing Count"}, {"Number of Rolls": 3, "Probability": 0.21625, "Method": "Decreasing Die"}, {"Number of Rolls": 3, "Probability": 0.27325, "Method": "Increasing Count"}, {"Number of Rolls": 4, "Probability": 0.31421875, "Method": "Decreasing Die"}, {"Number of Rolls": 4, "Probability": 0.41859999999999997, "Method": "Increasing Count"}, {"Number of Rolls": 5, "Probability": 0.42851562499999996, "Method": "Decreasing Die"}, {"Number of Rolls": 5, "Probability": 0.56395, "Method": "Increasing Count"}, {"Number of Rolls": 6, "Probability": 0.5713867187499999, "Method": "Decreasing Die"}, {"Number of Rolls": 6, "Probability": 0.694765, "Method": "Increasing Count"}, {"Number of Rolls": 7, "Probability": 0.785693359375, "Method": "Decreasing Die"}, {"Number of Rolls": 7, "Probability": 0.8015972499999999, "Method": "Increasing Count"}, {"Number of Rolls": 8, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 8, "Probability": 0.88095835, "Method": "Increasing Count"}, {"Number of Rolls": 9, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 9, "Probability": 0.9345270925, "Method": "Increasing Count"}, {"Number of Rolls": 10, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 10, "Probability": 0.96726354625, "Method": "Increasing Count"}, {"Number of Rolls": 11, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 11, "Probability": 0.9852685958125, "Method": "Increasing Count"}, {"Number of Rolls": 12, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 12, "Probability": 0.994107438325, "Method": "Increasing Count"}, {"Number of Rolls": 13, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 13, "Probability": 0.99793760341375, "Method": "Increasing Count"}, {"Number of Rolls": 14, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 14, "Probability": 0.999381281024125, "Method": "Increasing Count"}, {"Number of Rolls": 15, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 15, "Probability": 0.9998453202560313, "Method": "Increasing Count"}, {"Number of Rolls": 16, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 16, "Probability": 0.9999690640512062, "Method": "Increasing Count"}, {"Number of Rolls": 17, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 17, "Probability": 0.9999953596076809, "Method": "Increasing Count"}, {"Number of Rolls": 18, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 18, "Probability": 0.9999995359607681, "Method": "Increasing Count"}, {"Number of Rolls": 19, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 19, "Probability": 0.9999999767980384, "Method": "Increasing Count"}, {"Number of Rolls": 20, "Probability": 1.0, "Method": "Decreasing Die"}, {"Number of Rolls": 20, "Probability": 1.0, "Method": "Increasing Count"}]}}, {"mode": "vega-lite"});
 </script>
 </div>
 
@@ -459,8 +462,62 @@ window.onload = wrap_img;
 $$\begin{align}
 P_{\text{Increasing Count}}(S) = \frac{2}{20} &amp;= \frac{1}{10}\\
 P_{\text{Decreasing Die}}(S) &amp;= \frac{1}{12}
-\end{align}$$<p>Similarly for the third roll, where the Increasing Count gives a $3/20$ probability of a surge vs. a $1/10$ for the Decreasing Die. So the Increasing Count takes an early lead which it maintains for the entire 20 rolls. In fact, with the Decreasing Die method where you continue rolling <code>d4</code>'s, you may <em>never</em> roll a Wild Magic Surge, although of course the probability that this happens becomes vanishingly small.</p>
-<p>For completeness, here is the same data, but in a table view:</p>
+\end{align}$$<p>Similarly for the third roll, where the Increasing Count gives a $3/20$ probability of a surge vs. a $1/10$ for the Decreasing Die. So the Increasing Count takes an early lead which it maintains until the seventh roll, where the probability is about even between the methods. After this roll, the Decreasing Die method takes the lead because it gives an automatic Surge from here on out.</p>
+<p>My personal preference would lean towards the Increasing Count method, since you could conceivably get a string of rolls that build to a fairly high D.C., which feels a little more dramatic. On the other hand, the Decreasing Die method gives you a guaranteed Surge a fair bit sooner, which is part of the point of these tweaks in the first place.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also compute the expected number of rolls to get a Wild Magic Surge for both methods:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">E</span><span class="p">(</span><span class="n">pdf</span><span class="p">):</span>
+    <span class="n">ex</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdf</span><span class="p">)):</span>
+        <span class="n">ex</span> <span class="o">+=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">pdf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ex</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Expectation for Dice  Method:&quot;</span><span class="p">,</span> <span class="n">E</span><span class="p">(</span><span class="n">dicePDF</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Expectation for Count Method:&quot;</span><span class="p">,</span> <span class="n">E</span><span class="p">(</span><span class="n">countPDF</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Expectation for Dice  Method: 5.504768880208333
+Expectation for Count Method: 5.293584586000901
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Which is to say, on average the Increasing Count method will give us a Wild Magic Surge slightly sooner. Perhaps another reason to favor it.</p>
+<p>For completeness, here is the same data as in the graph, but in a table view:</p>
 
 </div>
 </div>
@@ -554,72 +611,72 @@ P_{\text{Decreasing Die}}(S) &amp;= \frac{1}{12}
     </tr>
     <tr>
       <th>7</th>
-      <td>0.678540</td>
+      <td>0.785693</td>
       <td>0.801597</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>0.758905</td>
+      <td>1.000000</td>
       <td>0.880958</td>
     </tr>
     <tr>
       <th>9</th>
-      <td>0.819179</td>
+      <td>1.000000</td>
       <td>0.934527</td>
     </tr>
     <tr>
       <th>10</th>
-      <td>0.864384</td>
+      <td>1.000000</td>
       <td>0.967264</td>
     </tr>
     <tr>
       <th>11</th>
-      <td>0.898288</td>
+      <td>1.000000</td>
       <td>0.985269</td>
     </tr>
     <tr>
       <th>12</th>
-      <td>0.923716</td>
+      <td>1.000000</td>
       <td>0.994107</td>
     </tr>
     <tr>
       <th>13</th>
-      <td>0.942787</td>
+      <td>1.000000</td>
       <td>0.997938</td>
     </tr>
     <tr>
       <th>14</th>
-      <td>0.957090</td>
+      <td>1.000000</td>
       <td>0.999381</td>
     </tr>
     <tr>
       <th>15</th>
-      <td>0.967818</td>
+      <td>1.000000</td>
       <td>0.999845</td>
     </tr>
     <tr>
       <th>16</th>
-      <td>0.975863</td>
+      <td>1.000000</td>
       <td>0.999969</td>
     </tr>
     <tr>
       <th>17</th>
-      <td>0.981897</td>
+      <td>1.000000</td>
       <td>0.999995</td>
     </tr>
     <tr>
       <th>18</th>
-      <td>0.986423</td>
+      <td>1.000000</td>
       <td>1.000000</td>
     </tr>
     <tr>
       <th>19</th>
-      <td>0.989817</td>
+      <td>1.000000</td>
       <td>1.000000</td>
     </tr>
     <tr>
       <th>20</th>
-      <td>0.992363</td>
+      <td>1.000000</td>
       <td>1.000000</td>
     </tr>
   </tbody>
