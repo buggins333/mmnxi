@@ -2,7 +2,7 @@
 keywords: fastai
 title: "Wild Magic Surges"
 categories: [dnd]
-image: images/rolls.png
+image: images/dnd/rolls.png
 nb_path: _notebooks/2020-05-03-Wild Magic Surges.ipynb
 layout: notebook
 ---
