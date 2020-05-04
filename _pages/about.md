@@ -1,10 +1,8 @@
 ---
 layout: page
-title: About Me
+title: About
 permalink: /about/
 ---
-
-# Me, Myself, and $\xi$
 
 This is the (brand new) personal blog of Bobby Huggins. I intend for it to serve as a landing page for various exercises and musings with a mathematical or computational bent.
 
