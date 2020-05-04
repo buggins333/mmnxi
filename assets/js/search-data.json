@@ -17,8 +17,8 @@
 
   
       ,"page1": {
-          "title": "About Me",
-          "content": "Me, Myself, and $ xi$ . This is the (brand new) personal blog of Bobby Huggins. I intend for it to serve as a landing page for various exercises and musings with a mathematical or computational bent. . This website is powered by fastpages 1. . a blogging platform that natively supports Jupyter notebooks in addition to other formats. &#8617; . |",
+          "title": "About",
+          "content": "This is the (brand new) personal blog of Bobby Huggins. I intend for it to serve as a landing page for various exercises and musings with a mathematical or computational bent. . This website is powered by fastpages 1. . a blogging platform that natively supports Jupyter notebooks in addition to other formats. &#8617; . |",
           "url": "https://buggins333.github.io/mmnxi/about/",
           "relUrl": "/about/",
           "date": ""
