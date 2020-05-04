@@ -132,7 +132,7 @@ layout: notebook
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Then we calculate the $CDF$ &mdash; that is, the probability of encountering a Wild Magic Surge in $k$ rolls or fewer, for each $k$.\
+<p>Then we calculate the $CDF$ &mdash; that is, the probability of encountering a Wild Magic Surge in $k$ rolls or fewer, for each $k$.<br>
 This is just the sum from $i=1$ to $i=k$ of the probabilities of getting a surge in exactly $i$ rolls &mdash; a partial sum of the $PDF$ we calculated above:</p>
 
 </div>
